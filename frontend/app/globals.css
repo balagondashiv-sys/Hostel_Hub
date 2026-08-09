@@ -85,7 +85,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  ::selection {
+    background-color: rgba(79, 70, 229, 0.2);
+    color: var(--primary);
   }
 }
 
