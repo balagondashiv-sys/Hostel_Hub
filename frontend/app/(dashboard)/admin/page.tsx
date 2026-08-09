@@ -19,7 +19,8 @@ export default function AdminDashboardPage() {
         const res = await fetch('/api/admin/overview', {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        const json = await res.json();
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : {};
         if (json.success) {
           setAdminData(json.data);
         }

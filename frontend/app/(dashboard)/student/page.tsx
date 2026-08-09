@@ -36,7 +36,8 @@ export default function StudentDashboardPage() {
         const res = await fetch('/api/dashboard/student', {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        const json = await res.json();
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : {};
         if (json.success) {
           setData(json.data);
         }

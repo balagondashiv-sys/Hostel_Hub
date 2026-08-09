@@ -18,7 +18,8 @@ export default function WardenDashboardPage() {
         const res = await fetch('/api/warden/dashboard', {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        const json = await res.json();
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : {};
         if (json.success) {
           setData(json.data);
         }

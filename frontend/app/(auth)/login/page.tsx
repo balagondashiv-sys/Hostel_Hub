@@ -59,10 +59,16 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error('Backend returned an invalid response. Render service may be starting up (cold start). Please try again in 15 seconds.');
+      }
 
       if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.message || `Login failed (${res.status})`);
       }
 
       // Save token
@@ -84,10 +90,42 @@ export default function LoginPage() {
     }
   };
 
-  const setDemoAccount = (demoEmail: string, targetPath: string) => {
+  const setDemoAccount = async (demoEmail: string, targetPath: string) => {
     setEmail(demoEmail);
     setPassword('demo1234');
-    router.push(targetPath);
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: demoEmail, password: 'demo1234' }),
+      });
+
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error('Backend returned an invalid response. Render service may be starting up (cold start). Please try again in 15 seconds.');
+      }
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Demo login failed');
+      }
+
+      if (data.data?.token) {
+        localStorage.setItem('hostelhub_token', data.data.token);
+        localStorage.setItem('hostelhub_user', JSON.stringify(data.data.user));
+      }
+
+      router.push(targetPath);
+    } catch (err: any) {
+      setError(err.message || 'Demo sign in failed. Please check backend status.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

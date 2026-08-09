@@ -21,7 +21,8 @@ export default function MaintenanceStaffPage() {
         const res = await fetch('/api/maintenance/tasks', {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        const json = await res.json();
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : {};
         if (json.success && json.data?.tasks) {
           setTasks(json.data.tasks);
           setCompletedCount(json.data.completedTodayCount || 12);

@@ -5,12 +5,16 @@ const nextConfig = {
     domains: ['images.unsplash.com', 'res.cloudinary.com', 'api.dicebear.com'],
   },
   async rewrites() {
+    let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    apiUrl = apiUrl.replace(/\/+$/, '');
+    if (!apiUrl.endsWith('/api')) {
+      apiUrl = `${apiUrl}/api`;
+    }
+
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL 
-          ? `${process.env.NEXT_PUBLIC_API_URL}/:path*`
-          : 'http://localhost:5000/api/:path*',
+        destination: `${apiUrl}/:path*`,
       },
     ];
   },
